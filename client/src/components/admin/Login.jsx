@@ -1,4 +1,9 @@
+import { useState } from "react";
+
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   };
@@ -15,10 +20,15 @@ const Login = () => {
               Enter your credentials to access the admin panel
             </p>
           </div>
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={handleSubmit}
+            className="mt-6 w-full sm:max-w-md text-gray-600"
+          >
             <div className="flex flex-col">
               <label>Email</label>
               <input
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
                 type="email"
                 required
                 placeholder="Your email id"
@@ -28,6 +38,8 @@ const Login = () => {
             <div className="flex flex-col">
               <label>Password</label>
               <input
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
                 type="password"
                 required
                 placeholder="Your password"
