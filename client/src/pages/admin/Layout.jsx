@@ -25,7 +25,7 @@ const Layout = () => {
           Logout
         </button>
       </div>
-      <div className="flex h-[cal(100vh-70px)]">
+      <div className="flex h-[calc(100vh-70px)]">
         <Sidebar />
         <Outlet />
       </div>
