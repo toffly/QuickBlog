@@ -8,7 +8,7 @@ export const adminLogin = async (req, res) => {
             return res.json({success: false, message: "Invalid Credentials"})
         }
 
-        const token = jwt({email}, process.env.JWT_SECRET)
+        const token = jwt.sign({email}, process.env.JWT_SECRET)
         res.json({success: true, token})
     } catch (error) {
         res.json({success: false, message: error.message})
