@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { assets, blogCategories } from "../../assets/assets";
 import Quill from "quill";
+import { useAppContext } from "../../context/AppContext";
+import toast from "react-hot-toast";
 
 const AddBlog = () => {
+  const { axios } = useAppContext();
+  const [isAdding, setIsAdding] = useState(false);
+
   const editorRef = useRef(null);
-  const Quillref = useRef(null);
+  const quillref = useRef(null);
 
   const [image, setImage] = useState(false);
   const [title, setTitle] = useState("");
@@ -13,14 +18,43 @@ const AddBlog = () => {
   const [isPublished, setIsPublished] = useState(false);
 
   const onSubmithandler = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
+      setIsAdding(true);
+
+      const blog = {
+        title,
+        subTitle,
+        description: quillref.current.root.innerHTML,
+        category,
+        isPublished,
+      };
+      const formData = new FormData();
+      formData.append("blog", JSON.stringify(blog));
+      formData.append("image", image);
+
+      const { data } = await axios.post("/api/blog/add", formData);
+      if (data.success) {
+        toast.success(data.message);
+        setImage(false);
+        setTitle("");
+        quillref.current.root.innerHTML = "";
+        setCategory("Startup");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const generateContent = async () => {};
 
   useEffect(() => {
-    if (!Quillref.current && editorRef.current) {
-      Quillref.current = new Quill(editorRef.current, { theme: "snow" });
+    if (!quillref.current && editorRef.current) {
+      quillref.current = new Quill(editorRef.current, { theme: "snow" });
     }
   }, []);
 
@@ -102,10 +136,11 @@ const AddBlog = () => {
         </div>
 
         <button
+          disabled={isAdding}
           type="Submit"
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
         >
-          Add Blog
+          {isAdding ? "Adding..." : "Add Blog"}
         </button>
       </div>
     </form>
