@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { assets, blog_data, comments_data } from "../assets/assets";
+import { assets } from "../assets/assets";
 import Navbar from "../components/Navbar";
 import Moment from "moment";
 import Footer from "../components/Footer";
 import Loader from "../components/Loader";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 const Blog = () => {
   const { id } = useParams();
+
+  const { axios } = useAppContext();
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
@@ -15,16 +19,41 @@ const Blog = () => {
   const [content, setContent] = useState("");
 
   const fetchBlogData = async () => {
-    const data = blog_data.find((item) => item._id === id);
-    setData(data);
+    try {
+      const { data } = await axios.get(`/api/blog/${id}`);
+      data.success ? setData(data.blog) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const fetchComments = async () => {
-    setComments(comments_data);
+    try {
+      const { data } = await axios.post(`/api/blog/comments`, { blogId: id });
+      data.success ? setComments(data.comments) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
-  const addComment = (e) => {
+  const addComment = async (e) => {
     e.preventDefault();
+    try {
+      const { data } = await axios.post(`/api/blog/add-comment`, {
+        blog: id,
+        name,
+        content,
+      });
+      if (data.success) {
+        toast.success(data.message);
+        setName("");
+        setContent("");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
@@ -96,7 +125,7 @@ const Blog = () => {
             type="text"
             placeholder="Name"
             required
-            className="w-full border border-gray-300 rounded outline-none"
+            className="w-full p-2 border border-gray-300 rounded outline-none"
           />
           <textarea
             onChange={(e) => setContent(e.target.value)}
@@ -122,10 +151,10 @@ const Blog = () => {
           <img src={assets.googleplus_icon} alt="google" width={50} />
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   ) : (
-    <Loader/>
+    <Loader />
   );
 };
 
