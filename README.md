@@ -1,3 +1,5 @@
+> **Important:** If you would like to inspect the admin page, please contact me first.
+
 # QuickBlog
 
 QuickBlog is a full-stack blogging platform. Visitors can browse published articles, filter them by category, search by title or category, read individual posts, and leave comments for moderation. Administrators can sign in to manage blog posts and review comments from a dashboard.
